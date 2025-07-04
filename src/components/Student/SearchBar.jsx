@@ -10,6 +10,9 @@ const SearchBar = ({ data }) => {
     e.preventDefault();
     navigate("/course-list/" + input);
   };
+  const clearInput = () => {
+    setInput(""); // Reset input field when the user clicks the clear button
+  };
   return (
     <>
       <form
@@ -28,8 +31,18 @@ const SearchBar = ({ data }) => {
           placeholder="Search for courses"
           className="w-full h-full outline-none text-gray-500/80"
         />
+        {input && (
+          <button
+            type="button"
+            onClick={clearInput}
+            className="text-gray-600 md:px-4 px-3 md:py-2 py-1"
+          >
+            ✕
+          </button>
+        )}
         <button
           type="submit"
+          // onClick={()=>clearInput()}
           className="bg-blue-600 rounded text-white md:px-10 px-7 md:py-3 py-2 mx-1"
         >
           Search
