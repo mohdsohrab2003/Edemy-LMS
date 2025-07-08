@@ -8,6 +8,7 @@ export const AppContextProvider = ({ children }) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const [allCourse, setAllCourse] = useState([]);
   const [isEducator, setIsEducator] = useState(true);
+  const [enrolledCourse, setEnrolledCourse] = useState([]);
   const navigate = useNavigate();
 
   const fetchAllCourse = async () => {
@@ -15,8 +16,11 @@ export const AppContextProvider = ({ children }) => {
   };
   useEffect(() => {
     fetchAllCourse();
+    fetchEnrolledCourse();
   });
-
+  const fetchEnrolledCourse = async () => {
+    setEnrolledCourse(dummyCourses);
+  };
   // Function to calculate average rating
   const calAverageRating = (course) => {
     if (course.courseRatings.length === 0) {
@@ -29,7 +33,7 @@ export const AppContextProvider = ({ children }) => {
     return totalRating / course.courseRatings.length;
   };
   // function to calculate chapter time
-  
+
   const calculateChapterTime = (chapters) => {
     let totalTime = 0;
     chapters.chapterContent.forEach((lecture) => {
@@ -40,22 +44,25 @@ export const AppContextProvider = ({ children }) => {
   };
   // function to calculate course duration
   const calculateCourseDuration = (course) => {
-    let time=0;
-    course.courseContent.map((chapter)=>chapter.chapterContent.forEach((lecture)=>time+=lecture.lectureDuration))
-    return humanizeDuration(time *60*100,{unit:["h","m"]});
-  }
+    let time = 0;
+    course.courseContent.map((chapter) =>
+      chapter.chapterContent.forEach(
+        (lecture) => (time += lecture.lectureDuration)
+      )
+    );
+    return humanizeDuration(time * 60 * 100, { unit: ["h", "m"] });
+  };
 
   // function to calculate No of lecture
   const calculateNoOfLecture = (course) => {
     let totalLecture = 0;
     course.courseContent.forEach((chapter) => {
-      if(Array.isArray(chapter.chapterContent)){
-        totalLecture+=chapter.chapterContent.length;
+      if (Array.isArray(chapter.chapterContent)) {
+        totalLecture += chapter.chapterContent.length;
       }
     });
     return totalLecture;
   };
-
 
   const value = {
     currency,
@@ -66,6 +73,8 @@ export const AppContextProvider = ({ children }) => {
     calculateChapterTime,
     calculateCourseDuration,
     calculateNoOfLecture,
+    enrolledCourse,
+    setEnrolledCourse,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

@@ -5,6 +5,7 @@ import Loading from "../../components/Student/Loading";
 import { assets } from "../../assets/assets";
 import humanizeDuration from "humanize-duration";
 import YouTube from "react-youtube";
+import Footer from "../../components/Student/Footer";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -248,7 +249,9 @@ const CourseDetails = () => {
             </div>
           </div>
         </div>
+
       </div>
+      <Footer/>
     </>
   ) : (
     <Loading />
