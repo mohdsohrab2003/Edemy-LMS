@@ -4,6 +4,7 @@ import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/Student/Loading";
 import { assets } from "../../assets/assets";
 import humanizeDuration from "humanize-duration";
+import YouTube from "react-youtube";
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -17,6 +18,8 @@ const CourseDetails = () => {
   } = useContext(AppContext);
   const [courseData, setCourseData] = useState(null);
   const [openSection, setOpenSection] = useState({});
+  const [isAlreadyEnrolled, setIsAlreadyEnrolled] = useState(false);
+  const [playerData, setPlayerData] = useState(null);
   const fetchCourseData = async () => {
     if (!allCourse || allCourse.length === 0) return;
 
@@ -26,7 +29,7 @@ const CourseDetails = () => {
 
   useEffect(() => {
     fetchCourseData();
-  }, []);
+  }, [allCourse]);
 
   const toggleSection = (index) => {
     setOpenSection((prev) => ({ ...prev, [index]: !openSection[index] }));
@@ -130,7 +133,16 @@ const CourseDetails = () => {
                                 <p>{lecture.lectureTitle}</p>
                                 <div className="flex gap-2 ">
                                   {lecture.isPreviewFree && (
-                                    <p className="text-blue-500 cursor-pointer">
+                                    <p
+                                      onClick={() =>
+                                        setPlayerData({
+                                          videoId: lecture.lectureUrl
+                                            .split("/")
+                                            .pop(),
+                                        })
+                                      }
+                                      className="text-blue-500 cursor-pointer"
+                                    >
                                       Preview
                                     </p>
                                   )}
@@ -165,30 +177,74 @@ const CourseDetails = () => {
         </div>
 
         {/* Right side */}
-        <div className="max-w-[424px] shadow-[0px_4px_15px_2px_rgba(0,0,0,0.1)]">
-          <img src={courseData.courseThumbnail} alt="" />
-          <div className="pt-5">
+        <div className="max-w-[424px] shadow-[0px_4px_15px_2px_rgba(0,0,0,0.1)] overflow-hidden md:rounded-none bg-white z-10 rounded-t min-w-[300px] sm:min-w-[420px] ">
+          {playerData ? (
+            <YouTube
+              videoId={playerData.videoId}
+              opts={{ playerVars: { autoplay: 1 } }}
+              iframeClassName="w-full aspect-ratio"
+            />
+          ) : (
+            <img src={courseData.courseThumbnail} alt="" />
+          )}
+
+          <div className="p-5">
             <div className="flex items-center gap-4 ">
               <img src={assets.time_clock_icon} alt="" className="w-3.5" />
+
               <p>
                 <span className="text-red-500">5 Days</span> left at this price{" "}
               </p>
             </div>
-            <div className="flex items-center gap-4 pt-3">
-              <p>
+            <div className="flex items-center gap-3 pt-2 ">
+              <p className="text-gray-800 md:text-4xl text-2xl font-semibold">
                 {currency}
                 {(
                   courseData.coursePrice -
                   (courseData.discount * courseData.coursePrice) / 100
                 ).toFixed(2)}
               </p>
-              <p className="text-gray-500 line-through">
+              <p className="text-gray-500 line-through md:text-lg ">
                 {currency}
                 {courseData.coursePrice}
               </p>
-              <p className="text-gray-500 ">
+              <p className="text-gray-500 md:text-lg ">
                 {courseData.discount}% off
               </p>
+            </div>
+            <div className="flex items-center  text-sm md:text-default gap-6 pt-2  md:pt-4 text-gray-500">
+              <div className="flex items-center gap-1">
+                <img src={assets.star} alt="star" />
+                <p>{calAverageRating(courseData)}</p>
+              </div>
+
+              <div className="h-4 w-px bg-gray-500/40"></div>
+              <div className="flex items-cneter">
+                <img src={assets.time_clock_icon} alt="clock icons" />
+                <p>{calculateCourseDuration(courseData)}</p>
+              </div>
+
+              <div className="h-4 w-px bg-gray-500/40"></div>
+              <div className="flex items-cneter">
+                <img src={assets.time_clock_icon} alt="clock icons" />
+                <p>{calculateNoOfLecture(courseData)}Lesson</p>
+              </div>
+            </div>
+            <button className="md:mt-6 mt-4 w-full py-3 rounded bg-blue-600 text-white cousor-pointer font-medium">
+              {isAlreadyEnrolled ? "Already Enrolled" : "Enroll Now"}
+            </button>
+
+            <div className="pt-6">
+              <p className="md:text-xl text-lg font-medium text-gray-800">
+                What's in the course?
+              </p>
+              <ul className="ml-4 pt-2 text-sm md:text-default list-disc text-gray-500">
+                <li>Lifetime access with free updates.</li>
+                <li>Step-by-step, hands-on project guidance.</li>
+                <li>Downloadable resources and source code.</li>
+                <li>Quizzes to test your knowledge.</li>
+                <li>Certificate of completion.</li>
+              </ul>
             </div>
           </div>
         </div>
