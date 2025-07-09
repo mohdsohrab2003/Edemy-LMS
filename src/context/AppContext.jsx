@@ -9,6 +9,7 @@ export const AppContextProvider = ({ children }) => {
   const [allCourse, setAllCourse] = useState([]);
   const [isEducator, setIsEducator] = useState(true);
   const [enrolledCourse, setEnrolledCourse] = useState([]);
+  
   const navigate = useNavigate();
 
   const fetchAllCourse = async () => {
